@@ -14,7 +14,9 @@ public enum StatusServerAttribute {
     USE_ALIAS(new TangoAttribute<Boolean>("isUseAliases", TangoDataFormat.<Boolean>createScalarDataFormat(),
             ScalarTangoDataTypes.BOOLEAN, EnumAttrWriteType.READ_WRITE, null)),
     CURRENT_ACTIVITY(new TangoAttribute<String>("crtActivity", TangoDataFormat.<String>createScalarDataFormat(),
-            ScalarTangoDataTypes.STRING, EnumAttrWriteType.READ, null));
+            ScalarTangoDataTypes.STRING, EnumAttrWriteType.READ, null)),
+    TIMESTAMP(new TangoAttribute<Long>("timestamp", TangoDataFormat.<Long>createScalarDataFormat(),
+            ScalarTangoDataTypes.LONG, EnumAttrWriteType.READ, null));
 
     private final TangoAttribute<?> attribute;
 

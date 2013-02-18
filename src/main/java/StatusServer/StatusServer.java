@@ -127,10 +127,13 @@ public class StatusServer extends DeviceImpl {
 
     @Override
     public void read_attr(Attribute attribute) throws DevFailed {
-        if(attribute.get_name().equalsIgnoreCase(StatusServerAttribute.USE_ALIAS.toTangoAttribute().getName())){
+        String name = attribute.get_name();
+        if(name.equalsIgnoreCase(StatusServerAttribute.USE_ALIAS.toTangoAttribute().getName())){
             StatusServerAttribute.USE_ALIAS.<Boolean>toTangoAttribute().read(attribute);
-        } else if(attribute.get_name().equalsIgnoreCase(StatusServerAttribute.CURRENT_ACTIVITY.toTangoAttribute().getName())){
+        } else if(name.equalsIgnoreCase(StatusServerAttribute.CURRENT_ACTIVITY.toTangoAttribute().getName())){
             attribute.set_value(engine.getCurrentActivity());
+        } else if(name.equalsIgnoreCase(StatusServerAttribute.TIMESTAMP.toTangoAttribute().getName())){
+            attribute.set_value(System.currentTimeMillis());
         }
     }
 
