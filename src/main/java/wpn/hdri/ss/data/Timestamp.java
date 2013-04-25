@@ -110,5 +110,13 @@ public class Timestamp implements Comparable<Timestamp> {
     public static Timestamp now() {
         return new Timestamp(System.currentTimeMillis());
     }
+
+    /**
+     *
+     * @param s long value as String
+     */
+    public static Timestamp fromString(String s) {
+        return new Timestamp(Long.parseLong(s));
+    }
 }
 

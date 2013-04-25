@@ -30,13 +30,11 @@
 package wpn.hdri.ss.data;
 
 import com.google.common.base.Objects;
-import wpn.hdri.collection.Maps;
 
 import javax.annotation.concurrent.ThreadSafe;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.concurrent.ConcurrentNavigableMap;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.NavigableSet;
 
 /**
  * Stores values and corresponding read timestamps
@@ -54,11 +52,14 @@ public abstract class Attribute<T> {
     private final String name;
     private final String alias;
     private final String fullName;
-    protected final ConcurrentNavigableMap<Timestamp, AttributeValue<T>> values = Maps.newConcurrentNavigableMap();
+
+    protected final AttributeValuesStorage<T> storage = new AttributeValuesStorage<T>(null, null);
+
+//    protected final ConcurrentNavigableMap<Timestamp, AttributeValue<T>> values = Maps.newConcurrentNavigableMap();
     private final Interpolation interpolation;
 
     //TODO encapsulate this into a dedicated class together with values field
-    protected final AtomicReference<AttributeValue<T>> latestValue = new AtomicReference<AttributeValue<T>>();
+//    protected final AtomicReference<AttributeValue<T>> latestValue = new AtomicReference<AttributeValue<T>>();
 
     public Attribute(String deviceName, String name, String alias, Interpolation interpolation) {
         this.deviceName = deviceName;
@@ -99,11 +100,7 @@ public abstract class Attribute<T> {
      */
     @SuppressWarnings("unchecked")
     public AttributeValue<T> getAttributeValue() {
-        Map.Entry<Timestamp, AttributeValue<T>> lastEntry = values.lastEntry();
-        if (lastEntry == null) {
-            return new AttributeValue<T>(fullName, alias, Value.NULL, Timestamp.now(), Timestamp.now());
-        }
-        return lastEntry.getValue();
+        return storage.getLastValue();
     }
 
     public AttributeValue<T> getAttributeValue(long timestamp) {
@@ -115,7 +112,7 @@ public abstract class Attribute<T> {
      * @return latest stored value of the attribute
      */
     public AttributeValue<T> getLatestAttributeValue() {
-        return latestValue.get();
+        return storage.getLastValue();
     }
 
     public AttributeValue<T> getAttributeValue(Timestamp timestamp) {
@@ -129,12 +126,7 @@ public abstract class Attribute<T> {
      * @return
      */
     public Iterable<AttributeValue<T>> getAttributeValues(final Timestamp timestamp) {
-        return new Iterable<AttributeValue<T>>() {
-            @Override
-            public Iterator<AttributeValue<T>> iterator() {
-                return values.tailMap(timestamp).values().iterator();
-            }
-        };
+        return storage.getInMemoryValues(timestamp);
     }
 
     /**
@@ -156,24 +148,16 @@ public abstract class Attribute<T> {
      */
     @SuppressWarnings("unchecked")
     public AttributeValue<T> getAttributeValue(Timestamp timestamp, Interpolation interpolation) {
-        if (values.isEmpty()) {
-            return new AttributeValue<T>(fullName, alias, Value.NULL, timestamp, timestamp);
+        if (storage.isEmpty()) {
+            return storage.getLastValue();
         }
         //TODO this creates new ImmutableEntry this could be avoided because there is only one writter to this but many readers - read is safe
-        Map.Entry<Timestamp, AttributeValue<T>> left = values.floorEntry(timestamp);
-        Map.Entry<Timestamp, AttributeValue<T>> right = values.ceilingEntry(timestamp);
-        if (left == null && right != null) {
-            return right.getValue();
-        }
-        if (left != null && right == null) {
-            return left.getValue();
-        }
-        if (left.getKey() == right.getKey()) {
-            return left.getValue();
-        }
+        AttributeValue<T> left = storage.floorValue(timestamp);
+        AttributeValue<T> right = storage.ceilingValue(timestamp);
+
         return interpolation.interpolate(
-                left.getValue(),
-                right.getValue(),
+                left,
+                right,
                 timestamp);
     }
 
@@ -225,9 +209,10 @@ public abstract class Attribute<T> {
     }
 
     /**
-     * Erases all the data from this attribute
+     * Erases all the data from this attribute stored in mem. Before erasure data is moved to persistent
      */
     public void clear() {
-        values.clear();
+        storage.persistInMemoryValues();
+        storage.clearInMemoryValues();
     }
 }

@@ -44,17 +44,8 @@ public final class NonNumericAttribute<T> extends Attribute<T> {
     @SuppressWarnings("unchecked")
     public void addValue(Timestamp readTimestamp, Value<? super T> value, Timestamp writeTimestamp) {
         AttributeValue<T> attributeValue = AttributeHelper.newAttributeValue(getFullName(), getAlias(), value, readTimestamp, writeTimestamp);
-        Map.Entry<Timestamp, AttributeValue<T>> lastEntry = values.lastEntry();
-        if (lastEntry == null) {
-            values.putIfAbsent(readTimestamp, attributeValue);
-            latestValue.set(attributeValue);
-            return;
-        }
-        AttributeValue<T> lastValue = lastEntry.getValue();
-        if (lastValue.getValue() != value) {
-            values.putIfAbsent(readTimestamp, attributeValue);
-            latestValue.set(attributeValue);
-        }
+
+        storage.addValue(attributeValue);
     }
 
     @Override

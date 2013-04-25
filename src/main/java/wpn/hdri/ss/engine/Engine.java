@@ -40,6 +40,7 @@ import wpn.hdri.ss.configuration.StatusServerAttribute;
 import wpn.hdri.ss.configuration.StatusServerConfiguration;
 import wpn.hdri.ss.data.*;
 import wpn.hdri.ss.storage.Storage;
+import wpn.hdri.ss.storage.StorageFactory;
 import wpn.hdri.tango.data.type.TangoDataType;
 import wpn.hdri.tango.data.type.TangoDataTypes;
 
@@ -74,7 +75,7 @@ public class Engine {
             ScheduledExecutorService scheduler;
 
     private final StatusServerConfiguration configuration;
-    private final Storage storage;
+    private final StorageFactory storage;
     private final ClientsManager clientsManager;
     private final AttributesManager attributesManager;
 
@@ -99,7 +100,7 @@ public class Engine {
      * @param logger
      * @param cpus
      */
-    public Engine(StatusServerConfiguration configuration, Storage storage, ClientsManager clientsManager, AttributesManager attributesManager, Logger logger, int cpus) {
+    public Engine(StatusServerConfiguration configuration, StorageFactory storage, ClientsManager clientsManager, AttributesManager attributesManager, Logger logger, int cpus) {
         this.configuration = configuration;
         this.storage = storage;
         this.clientsManager = clientsManager;

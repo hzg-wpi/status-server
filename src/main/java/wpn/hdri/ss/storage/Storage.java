@@ -29,15 +29,14 @@
 
 package wpn.hdri.ss.storage;
 
+import java.util.Collection;
+
 /**
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 27.04.12
  */
-public abstract class Storage {
-    protected Storage() {
-    }
+public interface Storage {
+    void save(String dataName, Iterable<String> header, Iterable<Iterable<String>> body) throws StorageException;
 
-    public abstract void write(long timestamp, Object data) throws StorageException;
-
-    public abstract Object read(long timestamp) throws StorageException;
+    <T> Iterable<T> load(String dataName, TypeFactory<T> factory) throws StorageException;
 }

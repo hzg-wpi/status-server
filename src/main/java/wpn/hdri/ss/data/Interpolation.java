@@ -59,7 +59,7 @@ public enum Interpolation {
          * @throws NumberFormatException if actual values are not valid numbers
          */
         @Override
-        public <T> AttributeValue<T> interpolate(AttributeValue<T> left, AttributeValue<T> right, Timestamp timestamp) {
+        protected  <T> AttributeValue<T> interpolateInternal(AttributeValue<T> left, AttributeValue<T> right, Timestamp timestamp) {
             checkPreconditions(left, right, timestamp);
 
             if (left.getWriteTimestamp().equals(timestamp)) {
@@ -108,7 +108,7 @@ public enum Interpolation {
     },
     LAST("last") {
         @Override
-        public <T> AttributeValue<T> interpolate(AttributeValue<T> left, AttributeValue<T> right, Timestamp timestamp) {
+        protected  <T> AttributeValue<T> interpolateInternal(AttributeValue<T> left, AttributeValue<T> right, Timestamp timestamp) {
             checkPreconditions(left);
             return left;
         }
@@ -125,7 +125,7 @@ public enum Interpolation {
          * @return AttributeValue which writeTimestamp is nearest to specified timestamp
          * @throws NullPointerException if any of the parameters is null
          */
-        public <T> AttributeValue<T> interpolate(AttributeValue<T> left, AttributeValue<T> right, Timestamp timestamp) {
+        protected  <T> AttributeValue<T> interpolateInternal(AttributeValue<T> left, AttributeValue<T> right, Timestamp timestamp) {
             checkPreconditions(left, right, timestamp);
 
             long leftValue = left.getWriteTimestamp().getValue();
@@ -167,7 +167,36 @@ public enum Interpolation {
         return aliases.get(alias);
     }
 
-    protected abstract <T> AttributeValue<T> interpolate(AttributeValue<T> left, AttributeValue<T> right, Timestamp timestamp);
+    /**
+     * If both left and right are nulls throws NPE
+     *
+     * If one of the left or right is null returns the opposite.
+     *
+     * If both are not nulls interpolate them.
+     *
+     * @param left
+     * @param right
+     * @param timestamp
+     * @param <T>
+     * @return
+     */
+    public  <T> AttributeValue<T> interpolate(AttributeValue<T> left, AttributeValue<T> right, Timestamp timestamp){
+        if(left == null & right == null){
+            throw new NullPointerException("Both left and right values are null.");
+        }
+
+        if(left == null){
+            return right;
+        }
+
+        if(right == null){
+            return left;
+        }
+
+        return interpolateInternal(left, right, timestamp);
+    }
+
+    protected abstract <T> AttributeValue<T> interpolateInternal(AttributeValue<T> left, AttributeValue<T> right, Timestamp timestamp);
 
     protected void checkPreconditions(Object... args) {
         for (Object arg : args) {
