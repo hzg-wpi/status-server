@@ -50,10 +50,7 @@ import java.util.concurrent.atomic.AtomicReference;
  */
 @ThreadSafe
 public abstract class Attribute<T> {
-    private final String deviceName;
-    private final String name;
-    private final String alias;
-    private final String fullName;
+    private final AttributeName name;
     protected final ConcurrentNavigableMap<Timestamp, AttributeValue<T>> values = Maps.newConcurrentNavigableMap();
     private final Interpolation interpolation;
 
@@ -61,10 +58,7 @@ public abstract class Attribute<T> {
     protected final AtomicReference<AttributeValue<T>> latestValue = new AtomicReference<AttributeValue<T>>();
 
     public Attribute(String deviceName, String name, String alias, Interpolation interpolation) {
-        this.deviceName = deviceName;
-        this.name = name;
-        this.alias = alias;
-        this.fullName = deviceName + "/" + name;
+        this.name = new AttributeName(deviceName, name, alias);
 
         this.interpolation = interpolation;
     }
@@ -101,7 +95,7 @@ public abstract class Attribute<T> {
     public AttributeValue<T> getAttributeValue() {
         Map.Entry<Timestamp, AttributeValue<T>> lastEntry = values.lastEntry();
         if (lastEntry == null) {
-            return new AttributeValue<T>(fullName, alias, Value.NULL, Timestamp.now(), Timestamp.now());
+            return new AttributeValue<T>(name.getFullName(), name.getAlias(), Value.NULL, Timestamp.now(), Timestamp.now());
         }
         return lastEntry.getValue();
     }
@@ -111,7 +105,6 @@ public abstract class Attribute<T> {
     }
 
     /**
-     *
      * @return latest stored value of the attribute
      */
     public AttributeValue<T> getLatestAttributeValue() {
@@ -157,7 +150,7 @@ public abstract class Attribute<T> {
     @SuppressWarnings("unchecked")
     public AttributeValue<T> getAttributeValue(Timestamp timestamp, Interpolation interpolation) {
         if (values.isEmpty()) {
-            return new AttributeValue<T>(fullName, alias, Value.NULL, timestamp, timestamp);
+            return new AttributeValue<T>(name.getFullName(), name.getAlias(), Value.NULL, timestamp, timestamp);
         }
         //TODO this creates new ImmutableEntry this could be avoided because there is only one writter to this but many readers - read is safe
         Map.Entry<Timestamp, AttributeValue<T>> left = values.floorEntry(timestamp);
@@ -177,20 +170,20 @@ public abstract class Attribute<T> {
                 timestamp);
     }
 
-    public String getName() {
+    public AttributeName getName() {
         return name;
     }
 
-    public String getAlias(){
-        return alias;
+    public String getAlias() {
+        return name.getAlias();
     }
 
     public String getDeviceName() {
-        return deviceName;
+        return name.getDeviceName();
     }
 
     public String getFullName() {
-        return fullName;
+        return name.getFullName();
     }
 
     @Override
@@ -200,20 +193,20 @@ public abstract class Attribute<T> {
 
         Attribute attribute = (Attribute) o;
 
-        if (fullName != null ? !fullName.equals(attribute.fullName) : attribute.fullName != null) return false;
+        if (name != null ? !name.equals(attribute.name) : attribute.name != null) return false;
 
         return true;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(fullName);
+        return Objects.hashCode(name);
     }
 
 
     @Override
     public String toString() {
-        return fullName;
+        return name.toString();
     }
 
     public Iterable<AttributeValue<T>> getAttributeValues(long timestamp) {
