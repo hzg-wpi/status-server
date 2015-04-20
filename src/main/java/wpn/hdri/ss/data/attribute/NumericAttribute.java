@@ -49,13 +49,6 @@ public final class NumericAttribute<T extends Number> extends Attribute<T> {
 
     public static final double DEFAULT_PRECISION = 0.;
 
-    private static final DecimalFormat DECIMAL_FORMAT = (DecimalFormat) DecimalFormat.getInstance();
-
-    static {
-        DECIMAL_FORMAT.setParseBigDecimal(true);
-    }
-
-    private static final ParsePosition POSITION = new ParsePosition(0);
     private final BigDecimal precision;
 
     private final ConcurrentNavigableMap<Timestamp, BigDecimal> numericValues = new ConcurrentSkipListMap<Timestamp, BigDecimal>();
@@ -90,7 +83,7 @@ public final class NumericAttribute<T extends Number> extends Attribute<T> {
 
     /**
      * Adds a value if it satisfies the precision test. If by ane means value can not be converted to BigDecimal it is skipped.
-     * <p/>
+     * <p>
      * Normally does not permit null values, only if it is the first value is being added
      *
      * @param value the value
@@ -103,15 +96,13 @@ public final class NumericAttribute<T extends Number> extends Attribute<T> {
         }
 
         //in general prefer new BigDecimal(String) over new BigDecimal(double). See Effective Java Item 31
-        String text = String.valueOf(value.getValue().get());
-        BigDecimal decimal = (BigDecimal) DECIMAL_FORMAT.parse(text, POSITION);
-        if (decimal == null) {
-            try {
-                decimal = new BigDecimal(text);
-            } catch (NumberFormatException e) {
-                LOGGER.error(e);
-                return false;
-            }
+        String text = String.valueOf(value.getValue().toString());
+        BigDecimal decimal;
+        try {
+            decimal = new BigDecimal(text);
+        } catch (NumberFormatException e) {
+            LOGGER.error(e);
+            return false;
         }
 
         Map.Entry<Timestamp, BigDecimal> lastNumericEntry = numericValues.floorEntry(value.getReadTimestamp());

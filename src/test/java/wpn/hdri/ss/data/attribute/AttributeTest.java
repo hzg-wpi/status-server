@@ -356,4 +356,16 @@ public class AttributeTest {
 
         assertTrue(Iterables.isEmpty(attribute.getAttributeValues(timestamp.add(new Timestamp(5)))));
     }
+
+    /**
+     * Test case for double=-7.188888876504625E-5
+     */
+    @Test
+    public void testReadSpecificDouble(){
+        Attribute<Double> attribute = new NumericAttribute<Double>(deviceName, name, Interpolation.LAST);
+
+        attribute.addValue(timestamp, Value.getInstance(Double.valueOf(-7.188888876504625E-5)), timestamp);
+
+        assertEquals(-7.188888876504625E-5, attribute.getAttributeValue(timestamp).getValue().get(), 0.0000000001D);
+    }
 }
