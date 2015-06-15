@@ -62,6 +62,11 @@
         </repository>
     </distributionManagement>
 
+    <properties>
+        <commons.version>1.0</commons.version>
+    </properties>
+
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -117,36 +122,11 @@
             <artifactId>utils</artifactId>
             <version>0.0.2</version>
         </dependency>
-        <!-- TODO move to common -->
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.tango</groupId>
-            <artifactId>JTangoServer</artifactId>
-            <version>9.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.tango</groupId>
-                    <artifactId>TangORB</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>ch.qos.logback</groupId>
-                    <artifactId>logback-classic</artifactId>
-                </exclusion>
-            </exclusions>
+            <groupId>hzg.wpn.tango</groupId>
+            <artifactId>server-commons</artifactId>
+            <version>${commons.version}</version>
+            <type>pom</type>
         </dependency>
     </dependencies>
 
@@ -211,6 +191,21 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release</id>
+            <dependencies>
+                <dependency>
+                    <groupId>hzg.wpn.tango</groupId>
+                    <artifactId>server-commons</artifactId>
+                    <version>${commons.version}</version>
+                    <type>pom</type>
+                    <scope>provided</scope>
+                </dependency>
+            </dependencies>
+        </profile>
+    </profiles>
 
     <repositories>
         <repository>
