@@ -3,7 +3,7 @@
 * Java 1.7 server environment
 * Tango 8+
 
-= User guide =
+# User guide
 
 Download [manual](https://bitbucket.org/hzgwpn/statusserver/downloads/StatusServerUserManual.pdf)
 
