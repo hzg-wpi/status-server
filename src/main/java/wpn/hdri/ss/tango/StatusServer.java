@@ -66,7 +66,7 @@ public class StatusServer implements StatusServerStub {
     @State
     private DeviceState state = DeviceState.OFF;
     @org.tango.server.annotation.Status
-    private String status = Status.IDLE;
+    private String status = StatusServerStatus.IDLE;
     @DynamicManagement
     private DynamicManager dynamicManagement;
     @DeviceManagement
@@ -176,7 +176,7 @@ public class StatusServer implements StatusServerStub {
         EngineInitializationContext ctx = initializer.initialize();
 
         this.engine = new Engine(ctx);
-        setStatus(Status.IDLE);
+        setStatus(StatusServerStatus.IDLE);
     }
 
     private void initializeDynamicAttributes(List<StatusServerAttribute> statusServerAttributes, DynamicManager dynamicManagement) throws DevFailed {
@@ -358,7 +358,7 @@ public class StatusServer implements StatusServerStub {
     public void startLightPolling() {
         stopCollectData();
         engine.startLightPolling();
-        setStatus(Status.LIGHT_POLLING);
+        setStatus(StatusServerStatus.LIGHT_POLLING);
     }
 
     @Override
@@ -367,7 +367,7 @@ public class StatusServer implements StatusServerStub {
     public void startLightPollingAtFixedRate(long rate) {
         stopCollectData();
         engine.startLightPollingAtFixedRate(rate);
-        setStatus(Status.LIGHT_POLLING_AT_FIXED_RATE);
+        setStatus(StatusServerStatus.LIGHT_POLLING_AT_FIXED_RATE);
     }
 
     @Override
@@ -376,7 +376,7 @@ public class StatusServer implements StatusServerStub {
     public void startCollectData() {
         stopCollectData();
         engine.start();
-        setStatus(Status.HEAVY_DUTY);
+        setStatus(StatusServerStatus.HEAVY_DUTY);
     }
 
     @Override
@@ -384,7 +384,7 @@ public class StatusServer implements StatusServerStub {
     @StateMachine(endState = DeviceState.ON)
     public void stopCollectData() {
         engine.stop();
-        setStatus(Status.IDLE);
+        setStatus(StatusServerStatus.IDLE);
     }
 
     @Override
@@ -484,13 +484,6 @@ public class StatusServer implements StatusServerStub {
     private static enum OutputType {
         PLAIN,
         JSON
-    }
-
-    private static interface Status {
-        String IDLE = "IDLE";
-        String LIGHT_POLLING = "LIGHT_POLLING";
-        String LIGHT_POLLING_AT_FIXED_RATE = "LIGHT_POLLING_AT_FIXED_RATE";
-        String HEAVY_DUTY = "HEAVY_DUTY";
     }
 
     private static class RequestContext {

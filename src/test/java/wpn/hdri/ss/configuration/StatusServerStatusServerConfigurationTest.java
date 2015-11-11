@@ -42,10 +42,10 @@ import static junit.framework.Assert.*;
  * @author Igor Khokhriakov <igor.khokhriakov@hzg.de>
  * @since 26.04.12
  */
-public class StatusServerConfigurationTest {
+public class StatusServerStatusServerConfigurationTest {
     @Test
     public void test() throws Exception {
-        StatusServerConfiguration conf = StatusServerConfiguration.XML_SERIALIZER.read(StatusServerConfiguration.class, StatusServerConfigurationTest.class.getResourceAsStream("/conf/StatusServer.test.xml"));
+        StatusServerConfiguration conf = StatusServerConfiguration.XML_SERIALIZER.read(StatusServerConfiguration.class, StatusServerStatusServerConfigurationTest.class.getResourceAsStream("/conf/StatusServer.test.xml"));
 
         assertEquals(1, conf.getProperties().jacorbMinCpus);
 
@@ -80,6 +80,6 @@ public class StatusServerConfigurationTest {
 
     @Test(expected = InvocationTargetException.class)
     public void test_bad() throws Exception {
-        StatusServerConfiguration conf = StatusServerConfiguration.XML_SERIALIZER.read(StatusServerConfiguration.class, StatusServerConfigurationTest.class.getResourceAsStream("/conf/StatusServer.test.BAD.xml"));
+        StatusServerConfiguration conf = StatusServerConfiguration.XML_SERIALIZER.read(StatusServerConfiguration.class, StatusServerStatusServerConfigurationTest.class.getResourceAsStream("/conf/StatusServer.test.BAD.xml"));
     }
 }

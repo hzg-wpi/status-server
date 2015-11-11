@@ -39,9 +39,7 @@ import org.simpleframework.xml.transform.Transform;
 import wpn.hdri.ss.data.Interpolation;
 import wpn.hdri.ss.data.Method;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -115,6 +113,14 @@ public final class StatusServerConfiguration {
             throw new IllegalArgumentException(pathToXml + " does not exist.");
         }
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(pathToXml))){
+            return XML_SERIALIZER.read(StatusServerConfiguration.class, bufferedReader);
+        } catch (Exception e) {
+            throw new ConfigurationException(e);
+        }
+    }
+
+    public static StatusServerConfiguration fromXmlStream(InputStream xmlStream) throws ConfigurationException {
+        try (BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(xmlStream))){
             return XML_SERIALIZER.read(StatusServerConfiguration.class, bufferedReader);
         } catch (Exception e) {
             throw new ConfigurationException(e);
