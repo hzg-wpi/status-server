@@ -183,7 +183,7 @@ public class StatusServer2 {
         return snapshotToStrings(engine.getStorage().getAllRecords().getRange(t), context);
     }
 
-    @Command
+    @Command(name="startCollectData")
     @StateMachine(endState = DeviceState.RUNNING, deniedStates = {DeviceState.RUNNING})
     public void start() {
         engine.start();
@@ -204,8 +204,8 @@ public class StatusServer2 {
         setStatus(StatusServerStatus.LIGHT_POLLING_AT_FIXED_RATE);
     }
 
-    @Command
-    @StateMachine(endState = DeviceState.ON, deniedStates = DeviceState.ON)
+    @Command(name="stopCollectData")
+    @StateMachine(endState = DeviceState.ON)
     public void stop() {
         engine.stop();
         setStatus(StatusServerStatus.IDLE);

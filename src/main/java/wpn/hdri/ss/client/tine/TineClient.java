@@ -317,14 +317,16 @@ public class TineClient extends Client implements ClientAdaptor {
     @Override
     public void unsubscribe(Attribute attr) {
         Future<TLink> futureLink = tlinks.remove(attr.name);
+        if(futureLink == null) return;
+        final TLink link;
         try {
-            final TLink link = futureLink.get();
-            int rc = link.close();
-            if (rc < 0) {
-                throw new IllegalStateException(link.getLastError());
-            }
-        } catch (Exception e) {
-            LOGGER.error("Failed to unsubscribe from " + getDeviceName() + "/" + attr.name + ": " + e.getMessage(), e);
+            link = futureLink.get();
+        } catch (InterruptedException|ExecutionException e) {
+            throw new RuntimeException(e);
         }
+        int rc = link.close();
+            if (rc < 0) {
+                LOGGER.warn("Failed to unsubscribe from {}/{}: {}", getDeviceName(), attr.name, link.getLastError());
+            }
     }
 }

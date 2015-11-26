@@ -217,7 +217,7 @@ public class TangoClient extends Client implements ClientAdaptor {
         try {
             proxy.unsubscribeFromEvent(attr.name, (TangoEvent) eventTypesMap.get(attr.eventType));
         } catch (TangoProxyException devFailed) {
-            LOGGER.error(devFailed.toString());
+            LOGGER.warn(devFailed.toString());
         }
     }
 }
