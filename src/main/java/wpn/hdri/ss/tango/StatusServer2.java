@@ -175,6 +175,11 @@ public class StatusServer2 {
         contextManager.setClientId(ClientIDUtil.toString(invocationContext.getClientID()));
     }
 
+    @Attribute
+    public long getCrtTimestamp(){
+        return System.currentTimeMillis();
+    }
+
     @Pipe(name = "status_server_pipe")
     private PipeValue pipe;
 
