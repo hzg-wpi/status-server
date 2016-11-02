@@ -26,7 +26,7 @@ public class FilteredSnapshot implements Iterable<SingleRecord<?>> {
             //TODO attrPos array can be moved to the group and created together with it avoiding this for-loop
             for (int i = 0, j = 0; i < snapshotSize; ++i) {
                 SingleRecord<?> record = snapshot.get(i);
-                if (attributesGroup.hasAttribute(record.attribute)) attrPos[j++] = i;
+                if (record != null && attributesGroup.hasAttribute(record.attribute)) attrPos[j++] = i;
             }
         } else {
             attrPos = null;

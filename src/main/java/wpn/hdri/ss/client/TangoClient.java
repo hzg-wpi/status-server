@@ -95,7 +95,7 @@ public class TangoClient extends Client implements ClientAdaptor {
             proxy.subscribeToEvent(attr.name, (TangoEvent) eventTypesMap.get(attr.eventType));
             TangoEventListener<Object> listener = new TangoEventListener<Object>() {
                 @Override
-                public void onEvent(EventData<Object> data) {
+                public void onEvent(org.tango.client.ez.proxy.EventData<Object> data) {
                     SingleRecord<?> record = new SingleRecord<>(attr, System.currentTimeMillis(), data.getTime(), data.getValue());
                     cbk.onEvent(record);
                 }

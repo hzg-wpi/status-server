@@ -30,6 +30,7 @@ public class Snapshot implements Iterable<SingleRecord<?>>{
     protected final long arrayIndexScale;
 
     public Snapshot(int totalAttributesNumber) {
+        //TODO initialize array with non-null values (SingleRecore with value == null)
         this.data = new AtomicReferenceArray<>(totalAttributesNumber);
         arrayBaseOffset = UnsafeSupport.UNSAFE.arrayBaseOffset(getArray().getClass());
         arrayIndexScale = UnsafeSupport.UNSAFE.arrayIndexScale(getArray().getClass());
